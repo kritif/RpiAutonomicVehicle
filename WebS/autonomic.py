@@ -1,8 +1,4 @@
-import turnleft
-import turnright
-import stop
-import forward
-import back
+import motorLib as motors
 import time
 
 global motorData
@@ -27,29 +23,30 @@ def start(data):
     global motorData
     motorData = MotorData(0,0,0)
     motorData.assign(data)
-    forward.now(motorData)
+    motors.forward(motorData)
 
 def checkCollision(data):
     global motorData
     print "AUTONOMIC MODE: Check Collision"
     if int(data.front) <= 15:
-        stop.now()
+        #stop.now()
+        motors.stop()
         direction = makeDecision(data)
         if direction == "left":
             print "AUTONOMIC MODE: Turn left"
-            forward.now(motorData)
+            motors.forward(motorData)
         if direction == "right":
             print "AUTONOMIC MODE: Turn right"
-            forward.now(motorData)
+            motors.forward(motorData)
         if direction == "error":
             print "AUTOOMIC MODE: error"
 
 def makeDecision(data):
     global motorData
     if int(data.left) > int(data.right):
-        turnleft.now(motorData)
+        motors.turnleft(motorData)
         return "left"
     if int(data.left) <= int(data.right):
-        turnright.now(motorData)
+        motors.turnright(motorData)
         return "right"
     return "error"

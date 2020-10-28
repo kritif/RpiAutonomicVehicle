@@ -6,14 +6,9 @@ import sensor4
 from tornado.options import define, options, parse_command_line
 import RPi.GPIO as GPIO
 import time
-import stop
-import forward
-import left
-import right
-import back
+import motorLib as motors
 import autonomic
-import turnleft
-import turnright
+
 
 connection = []
 GPIO.setwarnings(False)
@@ -70,7 +65,7 @@ def send_sensor_data():
                 c.write_message(str(sensorsData))
             except:
                 print("Distance send error")
-                stop.now()
+                motors.stop()
 
 define("port", default=8888, type=int)
 
@@ -78,25 +73,25 @@ def do_action(msg):
     global motorData
     global AUTO_MODE
     if msg == "FRONT":
-        forward.now(motorData)
+        motors.forward(motorData)
     elif msg == "STOP":
-        stop.now()
+        motors.stop()
     elif msg == "LEFT":
-        left.now(motorData)
+        motors.left(motorData)
     elif msg == "RIGHT":
-        right.now(motorData)
+        motors.right(motorData)
     elif msg == "BACK":
-        back.now(motorData)
+        motors.back(motorData)
     elif msg == "TLEFT":
-        turnleft.now(motorData)
+        motors.turnleft(motorData)
     elif msg == "TRIGHT":
-        turnright.now(motorData)
+        motors.turnright(motorData)
     elif msg == "AGO":
         AUTO_MODE = True
         autonomic.start(motorData)
     elif msg == "ASTOP":
         AUTO_MODE = False
-        stop.now()
+        motors.stop()
     else:
         msg = msg.split()
         if len(msg) == 3:
@@ -120,8 +115,7 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         print("New Connection")
         light_led_on_connect()
         self.write_message("update")
-        connection = []
-        connection.append(self)
+        connection = [self]
 
     def on_message(self, message):
         do_action(str(message))
@@ -137,8 +131,6 @@ app = tornado.web.Application([
 
 
 if __name__ == '__main__':
-    global leftPOWER
-    global rightPOWER
     global sensorsData
     global motorData
     global AUTO_MODE
