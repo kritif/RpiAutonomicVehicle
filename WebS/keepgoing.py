@@ -59,12 +59,14 @@ def checkCollision(data):
                 motors.forward(motorData)
     elif orientation == "left":
         if int(data.right) > 40:
+            time.sleep(0.5)
             motors.stop()
             motors.turnright(motorData)
             orientation = "forward"
             motors.forward(motorData)
     elif orientation == "right":
         if int(data.left) > 40:
+            time.sleep(0.5)
             motors.stop()
             motors.turnleft(motorData)
             orientation = "forward"
