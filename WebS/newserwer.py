@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 import time
 import motorLib as motors
 import autonomic
+import keepgoing
 
 
 connection = []
@@ -41,7 +42,8 @@ class MotorPower:
 
 global sensorsData
 global motorData
-global AUTO_MODE
+global AUTO_MODE_1
+global AUTO_MODE_2
 
 def light_led_on_connect():
     GPIO.output(12,GPIO.HIGH)
@@ -52,16 +54,20 @@ def light_led_off_disconnect():
 def send_sensor_data():
     global connection
     global sensorsData
-    global AUTO_MODE
+    global AUTO_MODE_1
+    global AUTO_MODE_2
     while True:
         time.sleep(0.6)
         for c in connection:
             try:
                 sensorsData.assign(sensor4.dist())
                 print sensorsData
-                if AUTO_MODE:
+                if AUTO_MODE_1:
                     print "SERVER: Check collision"
                     autonomic.checkCollision(sensorsData)
+                if AUTO_MODE_2:
+                    print "SERVER: Check collision"
+                    keepgoing.checkCollision(sensorsData)
                 c.write_message(str(sensorsData))
             except:
                 print("Distance send error")
@@ -71,7 +77,8 @@ define("port", default=8888, type=int)
 
 def do_action(msg):
     global motorData
-    global AUTO_MODE
+    global AUTO_MODE_1
+    global AUTO_MODE_2
     if msg == "FRONT":
         motors.forward(motorData)
     elif msg == "STOP":
@@ -86,11 +93,15 @@ def do_action(msg):
         motors.turnleft(motorData)
     elif msg == "TRIGHT":
         motors.turnright(motorData)
-    elif msg == "AGO":
-        AUTO_MODE = True
+    elif msg == "A1GO":
+        AUTO_MODE_1 = True
+        autonomic.start(motorData)
+    elif msg == "A2GO":
+        AUTO_MODE_2 = True
         autonomic.start(motorData)
     elif msg == "ASTOP":
-        AUTO_MODE = False
+        AUTO_MODE_1 = False
+        AUTO_MODE_2 = False
         motors.stop()
     else:
         msg = msg.split()
@@ -133,8 +144,10 @@ app = tornado.web.Application([
 if __name__ == '__main__':
     global sensorsData
     global motorData
-    global AUTO_MODE
-    AUTO_MODE = False
+    global AUTO_MODE_1
+    global AUTO_MODE_2
+    AUTO_MODE_1 = False
+    AUTO_MODE_2 = False
     motorData = MotorPower(2000,2000,2)
     sensorsData = SensorsObject()
     threadSensor = threading.Thread(target = send_sensor_data)
