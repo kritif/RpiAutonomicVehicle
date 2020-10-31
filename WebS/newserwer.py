@@ -35,10 +35,16 @@ class MotorPower:
     def __init__(self,left,right,time = 2):
         self.left = left
         self.right = right
-        self.time = time
+        self.time_left = time
+        self.time_right = time
     left  = 0
     right = 0
-    time  = 2
+    time_left  = 2
+    time_right = 2
+    left_p_left = 0
+    right_p_left = 0
+    left_p_right = 0
+    right_p_right = 0
 
 global sensorsData
 global motorData
@@ -98,23 +104,38 @@ def do_action(msg):
         autonomic.start(motorData)
     elif msg == "A2GO":
         AUTO_MODE_2 = True
-        autonomic.start(motorData)
+        keepgoing.start(motorData)
     elif msg == "ASTOP":
         AUTO_MODE_1 = False
         AUTO_MODE_2 = False
         motors.stop()
     else:
         msg = msg.split()
-        if len(msg) == 3:
-            leftpower = msg[0].split(":")
-            rightpower = msg[1].split(":")
-            turntime = msg[2].split(":") 
-            if leftpower[0] == "LP":
-                motorData.left = 40*int(leftpower[1])
-            if rightpower[0] == "RP":
-                motorData.right = 40*int(rightpower[1])
-            if turntime[0] == "TT":
-                motorData.time = float(turntime[1])/1000.0
+        if len(msg) == 8:
+            left_power_forward = msg[0].split(":")
+            right_power_forward = msg[1].split(":")
+            turn_time_left = msg[2].split(":")
+            turn_time_right = msg[3].split(":")
+            left_power_left = msg[4].split(":")
+            right_power_left = msg[5].split(":")
+            left_power_right = msg[6].split(":")
+            right_power_right = msg[7].split(":")
+            if left_power_forward[0] == "LP":
+                motorData.left = 40*int(left_power_forward[1])
+            if right_power_forward[0] == "RP":
+                motorData.right = 40*int(right_power_forward[1])
+            if turn_time_left[0] == "TLT":
+                motorData.time_left = float(turn_time_left[1]) / 1000.0
+            if turn_time_right[0] == "TRT":
+                motorData.time_right = float(turn_time_right[1]) / 1000.0
+            if left_power_left[0] == "LMPL":
+                motorData.left_p_left = 40 * int(left_power_left[1])
+            if right_power_left[0] == "RMPL":
+                motorData.right_p_left = 40 * int(right_power_left[1])
+            if left_power_right[0] == "LMPR":
+                motorData.left_p_right = 40 * int(left_power_right[1])
+            if right_power_right[0] == "RMPR":
+                motorData.right_p_right = 40 * int(right_power_right[1])
  
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):

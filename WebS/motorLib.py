@@ -15,28 +15,28 @@ def forward(data):
 
 
 def right(data):
-    pwm.set_pwm(2, 0, data.left)
+    pwm.set_pwm(2, 0, data.left_p_right)
     pwm.set_pwm(3, 4096, 0)
     pwm.set_pwm(4, 0, 0)
-    pwm.set_pwm(7, 0, data.right)
+    pwm.set_pwm(7, 0, data.right_p_right)
     pwm.set_pwm(6, 0, 0)
     pwm.set_pwm(5, 4096, 0)
 
 
 def left(data):
-    pwm.set_pwm(2, 0, data.left)
+    pwm.set_pwm(2, 0, data.left_p_left)
     pwm.set_pwm(3, 0, 0)
     pwm.set_pwm(4, 4096, 0)
-    pwm.set_pwm(7, 0, data.right)
+    pwm.set_pwm(7, 0, data.right_p_left)
     pwm.set_pwm(6, 4096, 0)
     pwm.set_pwm(5, 0, 0)
 
 
 def back(data):
-    pwm.set_pwm(2, 0, data.left)
+    pwm.set_pwm(2, 0, data.right)
     pwm.set_pwm(3, 0, 0)
     pwm.set_pwm(4, 4096, 0)
-    pwm.set_pwm(7, 0, data.right)
+    pwm.set_pwm(7, 0, data.left)
     pwm.set_pwm(6, 0, 0)
     pwm.set_pwm(5, 4096, 0)
 
@@ -52,11 +52,11 @@ def stop():
 
 def turnleft(data):
     left(data)
-    time.sleep(data.time)
+    time.sleep(data.time_left)
     stop()
 
 
 def turnright(data):
     right(data)
-    time.sleep(data.time)
+    time.sleep(data.time_right)
     stop()
