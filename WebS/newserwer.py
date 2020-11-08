@@ -9,7 +9,7 @@ import time
 import motorLib as motors
 import autonomic
 import keepgoing
-
+import backtohome
 
 connection = []
 GPIO.setwarnings(False)
@@ -136,6 +136,10 @@ def do_action(msg):
                 motorData.left_p_right = 40 * int(left_power_right[1])
             if right_power_right[0] == "RMPR":
                 motorData.right_p_right = 40 * int(right_power_right[1])
+        else:
+            msg = msg.split("=")
+            if msg[0] == "A3GO":
+                backtohome.start(motorData,msg[1])
  
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
